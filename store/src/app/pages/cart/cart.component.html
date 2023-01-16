@@ -56,7 +56,7 @@
     <ng-container matColumnDef="total">
       <th mat-header-cell *matHeaderCellDef>Total</th>
       <td mat-cell *matCellDef="let element">
-        {{ element.total | currency }}
+        {{ (element.quantity * element.price) | currency }}
       </td>
 
       <td mat-footer-cell *matFooterCellDef>
