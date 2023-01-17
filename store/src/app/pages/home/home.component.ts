@@ -4,12 +4,11 @@ import { Product } from 'src/app/models/product.model';
 import { CartService } from 'src/app/services/cart.service';
 import { StoreService } from 'src/app/services/store.service';
 
-
 const ROWS_HEIGHT: { [id: number]: number } = { 1: 400, 3: 335, 4: 350 };
 
 @Component({
   selector: 'app-home',
-  templateUrl: './home.component.html'
+  templateUrl: './home.component.html',
 })
 
 export class HomeComponent implements OnInit, OnDestroy
@@ -20,35 +19,22 @@ export class HomeComponent implements OnInit, OnDestroy
   count = '12';
   sort = 'desc';
   category: string | undefined;
-
-  //@Input() product: IProducts;
   productsSubscription: Subscription | undefined;
-
-  ngOnInit(): void {}
-  ngOnDestroy(): void
-  {
-    if (this.productsSubscription) {
-      this.productsSubscription.unsubscribe();
-    }
-  }
 
 
   constructor(private cartService: CartService, private storeService: StoreService) {}
 
 
-
-  getProducts(): void
+  ngOnInit(): void
   {
-    this.productsSubscription = this.storeService
-      .getAllProducts(this.count, this.sort, this.category)
-      .subscribe((_products) => {
-        this.products = _products;
-      });
+    this.getProducts();
   }
+
 
   onColumnsCountChange(colsNum: number): void
   {
-   this.cols = colsNum;
+    this.cols = colsNum;
+    this.rowHeight = ROWS_HEIGHT[colsNum];
   }
 
   onItemsCountChange(count: number): void
@@ -66,6 +52,16 @@ export class HomeComponent implements OnInit, OnDestroy
   onShowCategory(newCategory: string): void
   {
     this.category = newCategory;
+    this.getProducts();
+  }
+
+  getProducts(): void
+  {
+    this.productsSubscription = this.storeService
+      .getAllProducts(this.count, this.sort, this.category)
+      .subscribe((_products) => {
+        this.products = _products;
+      });
   }
 
   onAddToCart(product: Product): void
@@ -75,10 +71,17 @@ export class HomeComponent implements OnInit, OnDestroy
       name: product.title,
       price: product.price,
       quantity: 1,
-      id: product.id
+      id: product.id,
     });
   }
 
 
+  //on destory
+  ngOnDestroy(): void
+  {
+    if (this.productsSubscription) {
+      this.productsSubscription.unsubscribe();
+    }
+  }
 
 }
